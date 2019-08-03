@@ -1,11 +1,8 @@
 import axios from "axios"
 
-// This is your plugin object. It can be exported to be used anywhere.
 const VueAuthDownload = {
-  // The install method is all that needs to exist on the plugin object.
-  // It takes the global Vue object as well as user-defined options.
   install(Vue, pluginOptions) {
-    Vue.directive("auth-href-test", {
+    Vue.directive("auth-href", {
       bind: function(element, binding) {
         setClickListener(element, binding, pluginOptions)
       },
@@ -17,11 +14,7 @@ const VueAuthDownload = {
 }
 
 function setClickListener(element, binding, pluginOptions) {
-  // Si quiesiera acceder al argumento del la directiva (lo que esta luego de los :) o al valor,
-  // let type = binding.arg
-  // let myFunction = binding.value
   if (binding.oldValue === undefined || binding.value !== binding.oldValue) {
-    // como a la directiva no le pasamos ningun value, lo extraigo directamente del element al href
     element.removeEventListener(
       "click",
       eventClick.bind(null, element, binding, pluginOptions),
@@ -42,14 +35,21 @@ function eventClick(element, binding, pluginOptions) {
   // store the original href locally
   const href = element.href
 
-  // options default values
+  // Default options values
   const options = {
     token: "",
-    downloadingText: "Downloading",
+    headerAuthKey: "Authorization",
+    headerAuthValuePrefix: "Bearer ",
+    aditionalHeaders: {},
+
     textMode: "text",
+    downloadingText: "Downloading",
+    downloadingHtml: "",
+    dotsAnimation: true,
   }
 
   // try to get the values
+  // TOKEN:
   if (
     typeof binding.value === "object" &&
     binding.value.token &&
@@ -64,11 +64,57 @@ function eventClick(element, binding, pluginOptions) {
     options.token = pluginOptions.token
   } else {
     throw Error(
-      "You must provide the Token via options on instanciate or v-auth-href values",
+      "v-auth-href: You must provide the Token via options on instanciate or v-auth-href values",
     )
   }
 
-  if (pluginOptions.textMode === "text") {
+  // Header: auth key (only via options)
+  if (
+    typeof pluginOptions === "object" &&
+    pluginOptions.headerAuthKey &&
+    pluginOptions.headerAuthKey !== ""
+  ) {
+    options.headerAuthKey = pluginOptions.headerAuthKey
+  }
+
+  // Header: auth value prefix (Bearer) (only via options)
+  if (
+    typeof pluginOptions === "object" &&
+    pluginOptions.headerAuthValuePrefix &&
+    pluginOptions.headerAuthValuePrefix !== ""
+  ) {
+    options.headerAuthValuePrefix = pluginOptions.headerAuthValuePrefix
+  }
+
+  // Header: aditional headers
+  if (
+    typeof pluginOptions === "object" &&
+    pluginOptions.aditionalHeaders &&
+    typeof pluginOptions.aditionalHeaders === "object"
+  ) {
+    options.aditionalHeaders = pluginOptions.aditionalHeaders
+  }
+
+  // Plugin text mode (text or html)
+  if (
+    typeof binding.value === "object" &&
+    binding.value.textMode &&
+    binding.value.textMode !== ""
+  ) {
+    options.textMode = binding.value.textMode
+  } else if (
+    typeof pluginOptions === "object" &&
+    pluginOptions.textMode &&
+    pluginOptions.textMode !== ""
+  ) {
+    options.textMode = pluginOptions.textMode
+  }
+  if (!["text", "html"].includes(options.textMode)) {
+    throw Error("v-auth-href: textMode must be 'text' or 'html'")
+  }
+
+  if (options.textMode === "text") {
+    // downloadingText
     if (
       typeof binding.value === "object" &&
       binding.value.downloadingText &&
@@ -82,6 +128,31 @@ function eventClick(element, binding, pluginOptions) {
     ) {
       options.downloadingText = pluginOptions.downloadingText
     }
+
+    // dotsAnimation
+    if (typeof binding.value === "object" && binding.value.dotsAnimation) {
+      options.dotsAnimation = Boolean(binding.value.dotsAnimation)
+    } else if (
+      typeof pluginOptions === "object" &&
+      pluginOptions.dotsAnimation
+    ) {
+      options.dotsAnimation = Boolean(pluginOptions.dotsAnimation)
+    }
+  } else if (options.textMode === "html") {
+    // downloadingHtml
+    if (
+      typeof binding.value === "object" &&
+      binding.value.downloadingHtml &&
+      binding.value.downloadingHtml !== ""
+    ) {
+      options.downloadingHtml = binding.value.downloadingHtml
+    } else if (
+      typeof pluginOptions === "object" &&
+      pluginOptions.downloadingHtml &&
+      pluginOptions.downloadingHtml !== ""
+    ) {
+      options.downloadingHtml = pluginOptions.downloadingHtml
+    }
   }
 
   // check if the attribete data-downloading is present. If it isn't, add it. If it's present, the link was already clicked so cancel the operation
@@ -92,35 +163,43 @@ function eventClick(element, binding, pluginOptions) {
     return false
   }
 
-  // Store the node original HTML content and put the fancy message
+  // Save the original HTML node content and put the fancy message
   files[href] = element.innerHTML
   element.innerHTML =
-    pluginOptions.textMode === "text"
+    options.textMode === "text"
       ? options.downloadingText
-      : pluginOptions.downloadingHtml
-  element.removeAttribute("href") // Remove the original href to prevent click it more than once (and remove the styles)
+      : options.downloadingHtml
 
-  // This is for the dots animation
-  const interval = setInterval(() => {
-    element.innerHTML += "."
-    if (element.innerHTML.length === options.downloadingText.length + 3) {
-      element.innerHTML = options.downloadingText
-    }
-  }, 500)
+  // Remove the original href to prevent click it more than once and also remove the anchor styles
+  element.removeAttribute("href")
 
+  // Sets the dots animation
+  let interval
+  if (options.textMode === "text" && options.dotsAnimation === true) {
+    interval = setInterval(() => {
+      element.innerHTML += "."
+      if (element.innerHTML.length === options.downloadingText.length + 3) {
+        element.innerHTML = options.downloadingText
+      }
+    }, 500)
+  }
+
+  const authHeader = {}
+  authHeader[`${options.headerAuthKey}`] = `${options.headerAuthValuePrefix}${
+    options.token
+  }`
   axios({
     method: "GET",
     url: href,
     responseType: "blob",
     headers: {
-      Authorization: `Bearer ${options.token}`,
+      ...authHeader,
+      ...options.aditionalHeaders,
     },
   })
     .then(response => {
       // Take the response and fire the download process
       const blob = new Blob([response.data], { type: response.data.type })
-      // saveAs(blob, lastPartOfPath(href))
-
       const url = window.URL.createObjectURL(blob)
       const link = document.createElement("a")
       link.href = url
@@ -141,7 +220,9 @@ function eventClick(element, binding, pluginOptions) {
     })
     .finally(() => {
       // Restore the link back to it's original state
-      clearInterval(interval)
+      if (options.textMode === "text" && options.dotsAnimation === true) {
+        clearInterval(interval)
+      }
       element.innerHTML = files[href]
       element.setAttribute("href", href)
       element.removeAttribute("data-downloading")

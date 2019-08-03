@@ -1,0 +1,6 @@
+{
+  "htmlWhitespaceSensitivity": "ignore",
+  "html-whitespace-sensitivity": "ignore",
+  "semi": false,
+  "trailingComma": "all"
+}
