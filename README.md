@@ -36,7 +36,7 @@ Vue.use(VueAuthHref, options)
 <a v-auth-href="{ dotsAnimation: false }" href="https://link.to/your/protected/file.zip">Your File</a>
 ```
 ##### 🔎 Demo:
-<img src="https://raw.githubusercontent.com/nachodd/vue-auth-href/blob/master/demo_1.gif">
+![Demo 1](https://github.com/nachodd/vue-auth-href/blob/master/demo_1.gif)
 
 
 Some options can be passed inline to the directive, like:
@@ -68,7 +68,7 @@ Vue.use(VueAuthHref, {
 }
 ...
 ```
-<img src="https://raw.githubusercontent.com/nachodd/vue-auth-href/blob/master/demo_2.gif">
+![Demo 2](https://github.com/nachodd/vue-auth-href/blob/master/demo_2.gif)
 
 ```html
 <a v-auth-href="{
@@ -77,7 +77,7 @@ Vue.use(VueAuthHref, {
   downloadingHtml: '<i class=\'fas fa-cog fa-spin\'></i>',
 }" href="https://link.to/your/protected/file.zip">Your File</a>
 ```
-<img src="https://raw.githubusercontent.com/nachodd/vue-auth-href/blob/master/demo_3.gif">
+![Demo 3](https://github.com/nachodd/vue-auth-href/blob/master/demo_3.gif)
 
 
 ### 🤝 Contributing
