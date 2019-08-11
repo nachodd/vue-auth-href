@@ -35,7 +35,7 @@ Vue.use(VueAuthHref, options)
 <!-- Inline Initialization:  -->
 <a v-auth-href="{ dotsAnimation: false }" href="https://link.to/your/protected/file.zip">Your File</a>
 ```
-##### Demo:
+##### 🔎 Demo:
 <img src="https://raw.githubusercontent.com/nachodd/vue-auth-href/blob/master/demo_1.gif">
 
 
@@ -56,7 +56,7 @@ Some options can be passed inline to the directive, like:
 | `downloadingHtml` | String | "" | Initialization / Inline | HTML to be shown when link is clicked and before the file is downloaded. Can be used, for instance, to display an icon (see examples below) |
 | `dotsAnimation` | Boolean | true | Initialization / Inline | Show the fancy dots animation when link is clicked. Works only when `textMode: 'text'` |
 
-### Other Demos:
+### 🔎 Other Demos:
 
 ```js
 ...
@@ -78,3 +78,18 @@ Vue.use(VueAuthHref, {
 }" href="https://link.to/your/protected/file.zip">Your File</a>
 ```
 <img src="https://raw.githubusercontent.com/nachodd/vue-auth-href/blob/master/demo_3.gif">
+
+
+### 🤝 Contributing
+
+This repository is open for contribution. So, go ahead, fork it & send me a PR!
+
+### ⭐️ Support
+
+If you like this project, You can support me with starring ⭐ this repository
+
+### 📄 License
+
+[MIT](LICENSE)
+
+Developed with ❤️ by nachodd
