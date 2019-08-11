@@ -11,27 +11,37 @@ This plugin comes in the form of a Vue.js directive that is ready to work with J
 npm install --save vue-auth-href
 ```
 ### 🔧 Initialization
+JWT Token must be set in order to the download works. It can be set via option in the initialization, providing a function that returns the JWT Token, or inline.
+
 ```js
 import Vue from 'vue'
 import VueAuthHref from 'vue-auth-href'
+import store from "store/index"
 
 // Not mandatory, options can be set inline
 const options = {
-  token: "<YOUR JWT TOKEN HERE>",
+  token: () => store.getters["jwt_token"],
   // other options here (full list of options described below)
 }
 Vue.use(VueAuthHref, options)
 ```
+
 ### 🕹 Usage
+
 ```html
-<a v-auth-href href="https://link.to/your-file.zip">Your File</a>
+<!-- Initialization via Options:  -->
+<a v-auth-href href="https://link.to/your/protected/file.zip">Your File</a>
+
+<!-- Inline Initialization:  -->
+<a v-auth-href="{ dotsAnimation: false }" href="https://link.to/your/protected/file.zip">Your File</a>
 ```
 ##### Demo:
-[GIF]
+<img src="https://raw.githubusercontent.com/nachodd/vue-auth-href/blob/master/demo_1.gif">
+
 
 Some options can be passed inline to the directive, like:
 ```html
-<a :v-auth-href="{token: 'TOKEN'}" href="https://link.to/your-file.zip">Your File</a>
+<a v-auth-href="{token: 'TOKEN'}" href="https://link.to/your/protected/file.zip">Your File</a>
 ```
 ### ⚙️ Options
 
@@ -43,6 +53,28 @@ Some options can be passed inline to the directive, like:
 | `aditionalHeaders` | Object | {} | Initialization | Aditional headers to be sent on the request header. If it is setted, must be a javascript object |
 | `textMode` | String | "text" | Initialization / Inline | Indicates to use 'text' or 'html' when link is clicked (these two are the only possible values) |
 | `downloadingText` | String | "Downloading" | Initialization / Inline | Text to be shown when link is clicked and before the file is downloaded |
-| `downloadingText` | String | "Downloading" | Initialization / Inline | HTML to be shown when link is clicked and before the file is downloaded. Can be used, for instance, to display an icon (see examples below) |
+| `downloadingHtml` | String | "" | Initialization / Inline | HTML to be shown when link is clicked and before the file is downloaded. Can be used, for instance, to display an icon (see examples below) |
 | `dotsAnimation` | Boolean | true | Initialization / Inline | Show the fancy dots animation when link is clicked. Works only when `textMode: 'text'` |
 
+### Other Demos:
+
+```js
+...
+Vue.use(VueAuthHref, {
+  token: () => store.getters["auth/token"],
+  textMode: "text",
+  downloadingText: "Descargando",
+  aditionalHeaders: { env: "test" }, // aditional headers set on the request
+}
+...
+```
+<img src="https://raw.githubusercontent.com/nachodd/vue-auth-href/blob/master/demo_2.gif">
+
+```html
+<a v-auth-href="{
+  token: $store.getters['auth/token'],
+  textMode: 'html',
+  downloadingHtml: '<i class=\'fas fa-cog fa-spin\'></i>',
+}" href="https://link.to/your/protected/file.zip">Your File</a>
+```
+<img src="https://raw.githubusercontent.com/nachodd/vue-auth-href/blob/master/demo_3.gif">

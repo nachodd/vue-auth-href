@@ -59,9 +59,9 @@ function eventClick(element, binding, pluginOptions) {
   } else if (
     typeof pluginOptions === "object" &&
     pluginOptions.token &&
-    pluginOptions.token !== ""
+    typeof pluginOptions.token === "function"
   ) {
-    options.token = pluginOptions.token
+    options.token = pluginOptions.token()
   } else {
     throw Error(
       "v-auth-href: You must provide the Token via options on instanciate or v-auth-href values",
