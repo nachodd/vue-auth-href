@@ -11,6 +11,8 @@ This plugin comes in the form of a Vue.js directive that is ready to work with J
 ### 📦 Installation
 ```bash
 npm install --save vue-auth-href
+# or 
+yarn add vue-auth-href
 ```
 ### 🔧 Initialization
 JWT Token must be set in order to the download works. It can be set via option in the initialization, providing a function that returns the JWT Token, or inline.
@@ -22,7 +24,7 @@ import store from "store/index"
 
 // Not mandatory, options can be set inline
 const options = {
-  token: () => store.getters["jwt_token"],
+  token: () => store.getters["jwt_token"], // Note that this MUST BE a function that returns the token.
   // other options here (full list of options described below)
 }
 Vue.use(VueAuthHref, options)
