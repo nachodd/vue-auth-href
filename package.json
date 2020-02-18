@@ -1,7 +1,6 @@
 {
   "name": "vue-auth-href",
-  "version": "0.1.1",
-  "private": false,
+  "version": "1.0.1",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -32,5 +31,24 @@
   "browserslist": [
     "> 1%",
     "last 2 versions"
-  ]
+  ],
+  "description": "A VueJS directive for downloading files that are under a protected route schema (that needs an Authorization Header). It's a common thing on projects to have routes that are wrapped by an authentication middleware. Sometimes, depending on the project security schema, the access to files can be protected too. The problem is, that when in your frontend you put a link (an anchor tag) to a file that is protected, it can be tricky to make the authorization process. This is where this little plugin comes to help. This plugin comes in the form of a Vue.js directive that is ready to work with JWT auth schema. On the GET request made by an anchor tag when it's clicked, it adds the `Authorization: Bearer <TOKEN>` header automatically.",
+  "main": "src/vue-auth-download.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nachodd/vue-auth-href.git"
+  },
+  "keywords": [
+    "vue",
+    "directive",
+    "auth",
+    "download",
+    "middleware"
+  ],
+  "author": "nachodd",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nachodd/vue-auth-href/issues"
+  },
+  "homepage": "https://github.com/nachodd/vue-auth-href#readme"
 }
