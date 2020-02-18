@@ -13,6 +13,19 @@ const VueAuthDownload = {
   },
 }
 
+/**
+ * @param {Object} object
+ * @param {string} key
+ * @return {any} value
+ * @author ShortFuse
+ * @see {@link https://stackoverflow.com/a/47538066 Stack Overflow source post}
+ */
+function getParameterCaseInsensitive(object, key) {
+  return object[Object.keys(object)
+    .find(k => k.toLowerCase() === key.toLowerCase())
+    ];
+}
+
 function setClickListener(element, binding, pluginOptions) {
   if (binding.oldValue === undefined || binding.value !== binding.oldValue) {
     element.removeEventListener(
@@ -203,7 +216,7 @@ function eventClick(element, binding, pluginOptions) {
       const url = window.URL.createObjectURL(blob)
       const link = document.createElement("a")
       link.href = url
-      const contentDisposition = response.headers["content-disposition"]
+      const contentDisposition = getParameterCaseInsensitive(response.headers, "Content-Disposition")
       let fileName = href.substring(href.lastIndexOf("/") + 1)
       if (contentDisposition) {
         const fileNameMatch = contentDisposition.match(/filename="(.+)"/)
