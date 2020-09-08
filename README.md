@@ -11,7 +11,7 @@ This plugin comes in the form of a Vue.js directive that is ready to work with J
 ### 📦 Installation
 ```bash
 npm install --save vue-auth-href
-# or 
+# or
 yarn add vue-auth-href
 ```
 ### 🔧 Initialization
@@ -54,7 +54,7 @@ Some options can be passed inline to the directive, like:
 | `token` | String |  | Initialization / Inline | The JWT Token used for authentication. This parameter is **REQUIRED** |
 | `headerAuthKey` | String | "Authorization" | Initialization | The key used in the authorization header |
 | `headerAuthValuePrefix` | String | "Bearer " | Initialization | The prefix of the value used in the authorization header |
-| `aditionalHeaders` | Object | {} | Initialization | Aditional headers to be sent on the request header. If it is setted, must be a javascript object |
+| `additionalHeaders` | Object | {} | Initialization | Additional headers to be sent on the request header. If it is setted, must be a javascript object |
 | `textMode` | String | "text" | Initialization / Inline | Indicates to use 'text' or 'html' when link is clicked (these two are the only possible values) |
 | `downloadingText` | String | "Downloading" | Initialization / Inline | Text to be shown when link is clicked and before the file is downloaded |
 | `downloadingHtml` | String | "" | Initialization / Inline | HTML to be shown when link is clicked and before the file is downloaded. Can be used, for instance, to display an icon (see examples below) |
@@ -68,7 +68,7 @@ Vue.use(VueAuthHref, {
   token: () => store.getters["auth/token"],
   textMode: "text",
   downloadingText: "Descargando",
-  aditionalHeaders: { env: "test" }, // aditional headers set on the request
+  additionalHeaders: { env: "test" }, // additional headers set on the request
 }
 ...
 ```

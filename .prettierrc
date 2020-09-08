@@ -2,5 +2,7 @@
   "htmlWhitespaceSensitivity": "ignore",
   "html-whitespace-sensitivity": "ignore",
   "semi": false,
-  "trailingComma": "all"
+  "trailingComma": "none",
+  "arrowParens": "avoid",
+  "printWidth": 100
 }

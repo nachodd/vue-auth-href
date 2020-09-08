@@ -21,21 +21,13 @@ const VueAuthDownload = {
  * @see {@link https://stackoverflow.com/a/47538066 Stack Overflow source post}
  */
 function getParameterCaseInsensitive(object, key) {
-  return object[Object.keys(object)
-    .find(k => k.toLowerCase() === key.toLowerCase())
-    ];
+  return object[Object.keys(object).find(k => k.toLowerCase() === key.toLowerCase())]
 }
 
 function setClickListener(element, binding, pluginOptions) {
   if (binding.oldValue === undefined || binding.value !== binding.oldValue) {
-    element.removeEventListener(
-      "click",
-      eventClick.bind(null, element, binding, pluginOptions),
-    )
-    element.addEventListener(
-      "click",
-      eventClick.bind(null, element, binding, pluginOptions),
-    )
+    element.removeEventListener("click", eventClick.bind(null, element, binding, pluginOptions))
+    element.addEventListener("click", eventClick.bind(null, element, binding, pluginOptions))
   }
 }
 
@@ -43,7 +35,7 @@ const files = {}
 
 function eventClick(element, binding, pluginOptions) {
   // prevent default click action (click on a link)
-  event.preventDefault()
+  event && event.preventDefault()
 
   // store the original href locally
   const href = element.href
@@ -63,11 +55,7 @@ function eventClick(element, binding, pluginOptions) {
 
   // try to get the values
   // TOKEN:
-  if (
-    typeof binding.value === "object" &&
-    binding.value.token &&
-    binding.value.token !== ""
-  ) {
+  if (typeof binding.value === "object" && binding.value.token && binding.value.token !== "") {
     options.token = binding.value.token
   } else if (
     typeof pluginOptions === "object" &&
@@ -100,12 +88,17 @@ function eventClick(element, binding, pluginOptions) {
   }
 
   // Header: aditional headers
-  if (
-    typeof pluginOptions === "object" &&
-    pluginOptions.aditionalHeaders &&
-    typeof pluginOptions.aditionalHeaders === "object"
-  ) {
-    options.aditionalHeaders = pluginOptions.aditionalHeaders
+  if (typeof pluginOptions === "object") {
+    // There was a typo in 'aditionalHeaders', so check for both 'aditionalHeaders' and 'additionalHeaders'
+    //
+    if (pluginOptions.aditionalHeaders && typeof pluginOptions.aditionalHeaders === "object") {
+      options.additionalHeaders = pluginOptions.aditionalHeaders
+    } else if (
+      pluginOptions.additionalHeaders &&
+      typeof pluginOptions.additionalHeaders === "object"
+    ) {
+      options.additionalHeaders = pluginOptions.additionalHeaders
+    }
   }
 
   // Plugin text mode (text or html)
@@ -145,10 +138,7 @@ function eventClick(element, binding, pluginOptions) {
     // dotsAnimation
     if (typeof binding.value === "object" && binding.value.dotsAnimation) {
       options.dotsAnimation = Boolean(binding.value.dotsAnimation)
-    } else if (
-      typeof pluginOptions === "object" &&
-      pluginOptions.dotsAnimation
-    ) {
+    } else if (typeof pluginOptions === "object" && pluginOptions.dotsAnimation) {
       options.dotsAnimation = Boolean(pluginOptions.dotsAnimation)
     }
   } else if (options.textMode === "html") {
@@ -179,9 +169,7 @@ function eventClick(element, binding, pluginOptions) {
   // Save the original HTML node content and put the fancy message
   files[href] = element.innerHTML
   element.innerHTML =
-    options.textMode === "text"
-      ? options.downloadingText
-      : options.downloadingHtml
+    options.textMode === "text" ? options.downloadingText : options.downloadingHtml
 
   // Remove the original href to prevent click it more than once and also remove the anchor styles
   element.removeAttribute("href")
@@ -198,9 +186,8 @@ function eventClick(element, binding, pluginOptions) {
   }
 
   const authHeader = {}
-  authHeader[`${options.headerAuthKey}`] = `${options.headerAuthValuePrefix}${
-    options.token
-  }`
+  authHeader[options.headerAuthKey] = `${options.headerAuthValuePrefix}${options.token}`
+
   axios({
     method: "GET",
     url: href,
@@ -216,7 +203,10 @@ function eventClick(element, binding, pluginOptions) {
       const url = window.URL.createObjectURL(blob)
       const link = document.createElement("a")
       link.href = url
-      const contentDisposition = getParameterCaseInsensitive(response.headers, "Content-Disposition")
+      const contentDisposition = getParameterCaseInsensitive(
+        response.headers,
+        "Content-Disposition",
+      )
       let fileName = href.substring(href.lastIndexOf("/") + 1)
       if (contentDisposition) {
         const fileNameMatch = contentDisposition.match(/filename="(.+)"/)

@@ -1,27 +1,30 @@
 {
   "name": "vue-auth-href",
-  "version": "1.0.1",
+  "version": "1.1.0",
+  "private": false,
+  "main": "./dist/vue-auth-href.common.js",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
+    "build:lib": "vue-cli-service build --target lib --name vue-auth-href src/vue-auth-download.js",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "axios": "^0.19.0",
-    "core-js": "^2.6.5",
-    "vue": "^2.6.10"
+    "axios": "^0.20.0",
+    "core-js": "^3.6.5",
+    "vue": "^2.6.12"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.9.0",
-    "@vue/cli-plugin-eslint": "^3.9.0",
-    "@vue/cli-service": "^3.9.0",
-    "@vue/eslint-config-prettier": "^5.0.0",
-    "babel-eslint": "^10.0.1",
-    "eslint": "^5.16.0",
-    "eslint-loader": "^2.2.1",
-    "eslint-plugin-prettier": "^3.1.0",
-    "eslint-plugin-vue": "^5.0.0",
-    "vue-template-compiler": "^2.6.10"
+    "@vue/cli-plugin-babel": "^4.5.4",
+    "@vue/cli-plugin-eslint": "^4.5.4",
+    "@vue/cli-service": "^4.5.4",
+    "@vue/eslint-config-prettier": "^6.0.0",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.8.1",
+    "eslint-loader": "^4.0.2",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-vue": "^6.2.2",
+    "vue-template-compiler": "^2.6.12"
   },
   "postcss": {
     "plugins": {
@@ -33,7 +36,6 @@
     "last 2 versions"
   ],
   "description": "A VueJS directive for downloading files that are under a protected route schema (that needs an Authorization Header). It's a common thing on projects to have routes that are wrapped by an authentication middleware. Sometimes, depending on the project security schema, the access to files can be protected too. The problem is, that when in your frontend you put a link (an anchor tag) to a file that is protected, it can be tricky to make the authorization process. This is where this little plugin comes to help. This plugin comes in the form of a Vue.js directive that is ready to work with JWT auth schema. On the GET request made by an anchor tag when it's clicked, it adds the `Authorization: Bearer <TOKEN>` header automatically.",
-  "main": "src/vue-auth-download.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nachodd/vue-auth-href.git"
@@ -44,6 +46,10 @@
     "auth",
     "download",
     "middleware"
+  ],
+  "files": [
+    "dist/*",
+    "src/*"
   ],
   "author": "nachodd",
   "license": "MIT",
