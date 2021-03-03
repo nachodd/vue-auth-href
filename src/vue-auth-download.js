@@ -37,6 +37,8 @@ function eventClick(element, binding, pluginOptions) {
   // prevent default click action (click on a link)
   event && event.preventDefault()
 
+  const defaultDownloadMode = "download"
+
   // store the original href locally
   const href = element.href
 
@@ -51,6 +53,8 @@ function eventClick(element, binding, pluginOptions) {
     downloadingText: "Downloading",
     downloadingHtml: "",
     dotsAnimation: true,
+
+    downloadMode: defaultDownloadMode
   }
 
   // try to get the values
@@ -67,6 +71,21 @@ function eventClick(element, binding, pluginOptions) {
     throw Error(
       "v-auth-href: You must provide the Token via options on instanciate or v-auth-href values",
     )
+  }
+  
+  // downloadMode:
+  if (
+    typeof binding.value === "object" &&
+    binding.value.downloadMode &&
+    binding.value.downloadMode !== ""
+  ) {
+    options.downloadMode = binding.value.downloadMode
+  } else if (
+    typeof pluginOptions === "object" &&
+    pluginOptions.downloadMode &&
+    pluginOptions.downloadMode !== ""
+  ) {
+    options.downloadMode = pluginOptions.downloadMode
   }
 
   // Header: auth key (only via options)
@@ -209,10 +228,14 @@ function eventClick(element, binding, pluginOptions) {
       )
       let fileName = href.substring(href.lastIndexOf("/") + 1)
       if (contentDisposition) {
-        const fileNameMatch = contentDisposition.match(/filename="(.+)"/)
+        const fileNameMatch = contentDisposition.match(/filename="?(.+)"?/)
         if (fileNameMatch != null && fileNameMatch.length === 2) fileName = fileNameMatch[1]
       }
-      link.setAttribute("download", fileName)
+      if (options.downloadMode === defaultDownloadMode) {
+        link.setAttribute("download", fileName)        
+      } else {
+        link.setAttribute("target", options.downloadMode)
+      }
       document.body.appendChild(link)
       link.click()
       link.remove()
