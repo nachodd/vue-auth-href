@@ -51,7 +51,7 @@ function eventClick(element, binding, pluginOptions) {
     downloadingText: "Downloading",
     downloadingHtml: "",
     dotsAnimation: true,
-    overrideInnerHtml: true
+    overrideInnerHtml: true,
   }
 
   // try to get the values
@@ -164,7 +164,6 @@ function eventClick(element, binding, pluginOptions) {
   } else if (typeof pluginOptions === "object" && pluginOptions.overrideInnerHtml !== undefined) {
     options.overrideInnerHtml = Boolean(pluginOptions.overrideInnerHtml)
   }
-  
 
   // check if the attribete data-downloading is present. If it isn't, add it. If it's present, the link was already clicked so cancel the operation
   const isDownloading = element.getAttribute("data-downloading")
@@ -186,7 +185,11 @@ function eventClick(element, binding, pluginOptions) {
 
   // Sets the dots animation
   let interval
-  if (options.textMode === "text" && options.dotsAnimation === true && options.overrideInnerHtml === true) {
+  if (
+    options.textMode === "text" &&
+    options.dotsAnimation === true &&
+    options.overrideInnerHtml === true
+  ) {
     interval = setInterval(() => {
       element.innerHTML += "."
       if (element.innerHTML.length === options.downloadingText.length + 3) {
@@ -223,8 +226,8 @@ function eventClick(element, binding, pluginOptions) {
         if (fileNameMatch != null && fileNameMatch.length === 2) {
           fileName = fileNameMatch[1]
           // content disposition filename is usually url encoded
-          fileName = fileName.replace(/\+/g, '%20')
-          fileName = decodeURIComponent(fileName);
+          fileName = fileName.replace(/\+/g, "%20")
+          fileName = decodeURIComponent(fileName)
         }
       }
       if (element.hasAttribute("target")) {
