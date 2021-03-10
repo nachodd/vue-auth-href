@@ -51,6 +51,7 @@ function eventClick(element, binding, pluginOptions) {
     downloadingText: "Downloading",
     downloadingHtml: "",
     dotsAnimation: true,
+    overrideInnerHtml: true
   }
 
   // try to get the values
@@ -136,9 +137,9 @@ function eventClick(element, binding, pluginOptions) {
     }
 
     // dotsAnimation
-    if (typeof binding.value === "object" && binding.value.dotsAnimation) {
+    if (typeof binding.value === "object" && binding.value.dotsAnimation !== undefined) {
       options.dotsAnimation = Boolean(binding.value.dotsAnimation)
-    } else if (typeof pluginOptions === "object" && pluginOptions.dotsAnimation) {
+    } else if (typeof pluginOptions === "object" && pluginOptions.dotsAnimation !== undefined) {
       options.dotsAnimation = Boolean(pluginOptions.dotsAnimation)
     }
   } else if (options.textMode === "html") {
@@ -157,6 +158,13 @@ function eventClick(element, binding, pluginOptions) {
       options.downloadingHtml = pluginOptions.downloadingHtml
     }
   }
+  // overrideInnerHtml
+  if (typeof binding.value === "object" && binding.value.overrideInnerHtml !== undefined) {
+    options.overrideInnerHtml = Boolean(binding.value.overrideInnerHtml)
+  } else if (typeof pluginOptions === "object" && pluginOptions.overrideInnerHtml !== undefined) {
+    options.overrideInnerHtml = Boolean(pluginOptions.overrideInnerHtml)
+  }
+  
 
   // check if the attribete data-downloading is present. If it isn't, add it. If it's present, the link was already clicked so cancel the operation
   const isDownloading = element.getAttribute("data-downloading")
@@ -166,17 +174,19 @@ function eventClick(element, binding, pluginOptions) {
     return false
   }
 
-  // Save the original HTML node content and put the fancy message
-  files[href] = element.innerHTML
-  element.innerHTML =
-    options.textMode === "text" ? options.downloadingText : options.downloadingHtml
+  if (options.overrideInnerHtml) {
+    // Save the original HTML node content and put the fancy message
+    files[href] = element.innerHTML
+    element.innerHTML =
+      options.textMode === "text" ? options.downloadingText : options.downloadingHtml
+  }
 
   // Remove the original href to prevent click it more than once and also remove the anchor styles
   element.removeAttribute("href")
 
   // Sets the dots animation
   let interval
-  if (options.textMode === "text" && options.dotsAnimation === true) {
+  if (options.textMode === "text" && options.dotsAnimation === true && options.overrideInnerHtml === true) {
     interval = setInterval(() => {
       element.innerHTML += "."
       if (element.innerHTML.length === options.downloadingText.length + 3) {
@@ -209,10 +219,19 @@ function eventClick(element, binding, pluginOptions) {
       )
       let fileName = href.substring(href.lastIndexOf("/") + 1)
       if (contentDisposition) {
-        const fileNameMatch = contentDisposition.match(/filename="(.+)"/)
-        if (fileNameMatch != null && fileNameMatch.length === 2) fileName = fileNameMatch[1]
+        const fileNameMatch = contentDisposition.match(/filename="?(.+)"?/)
+        if (fileNameMatch != null && fileNameMatch.length === 2) {
+          fileName = fileNameMatch[1]
+          // content disposition filename is usually url encoded
+          fileName = fileName.replace(/\+/g, '%20')
+          fileName = decodeURIComponent(fileName);
+        }
       }
-      link.setAttribute("download", fileName)
+      if (element.hasAttribute("target")) {
+        link.setAttribute("target", element.target)
+      } else {
+        link.setAttribute("download", fileName)
+      }
       document.body.appendChild(link)
       link.click()
       link.remove()
@@ -223,10 +242,12 @@ function eventClick(element, binding, pluginOptions) {
     })
     .finally(() => {
       // Restore the link back to it's original state
-      if (options.textMode === "text" && options.dotsAnimation === true) {
-        clearInterval(interval)
+      if (options.overrideInnerHtml === true) {
+        if (options.textMode === "text" && options.dotsAnimation === true) {
+          clearInterval(interval)
+        }
+        element.innerHTML = files[href]
       }
-      element.innerHTML = files[href]
       element.setAttribute("href", href)
       element.removeAttribute("data-downloading")
     })
