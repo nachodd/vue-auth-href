@@ -52,6 +52,7 @@ function eventClick(element, binding, pluginOptions) {
     downloadingHtml: "",
     dotsAnimation: true,
     overrideInnerHtml: true,
+    removeDelay: -1,
   }
 
   // try to get the values
@@ -164,6 +165,13 @@ function eventClick(element, binding, pluginOptions) {
   } else if (typeof pluginOptions === "object" && pluginOptions.overrideInnerHtml !== undefined) {
     options.overrideInnerHtml = Boolean(pluginOptions.overrideInnerHtml)
   }
+  
+  // removeDelay
+  if (typeof binding.value === "object" && binding.value.removeDelay !== undefined) {
+    options.removeDelay = Number(binding.value.removeDelay)
+  } else if (typeof pluginOptions === "object" && pluginOptions.removeDelay !== undefined) {
+    options.removeDelay = Number(pluginOptions.removeDelay)
+  }  
 
   // check if the attribete data-downloading is present. If it isn't, add it. If it's present, the link was already clicked so cancel the operation
   const isDownloading = element.getAttribute("data-downloading")
@@ -237,8 +245,15 @@ function eventClick(element, binding, pluginOptions) {
       }
       document.body.appendChild(link)
       link.click()
-      link.remove()
-      window.URL.revokeObjectURL(url)
+      if (options.removeDelay >= 0) {
+        setTimeout(function(){
+          link.remove()
+          window.URL.revokeObjectURL(url)
+        }, options.removeDelay)
+      } else {
+        link.remove()
+        window.URL.revokeObjectURL(url)
+      }
     })
     .catch(e => {
       throw e
