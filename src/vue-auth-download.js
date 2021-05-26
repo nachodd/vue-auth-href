@@ -53,6 +53,7 @@ function eventClick(element, binding, pluginOptions) {
     dotsAnimation: true,
     overrideInnerHtml: true,
     removeDelay: -1,
+    errorHandler: (e) => { throw e }
   }
 
   // try to get the values
@@ -165,13 +166,20 @@ function eventClick(element, binding, pluginOptions) {
   } else if (typeof pluginOptions === "object" && pluginOptions.overrideInnerHtml !== undefined) {
     options.overrideInnerHtml = Boolean(pluginOptions.overrideInnerHtml)
   }
-  
+
   // removeDelay
   if (typeof binding.value === "object" && binding.value.removeDelay !== undefined) {
     options.removeDelay = Number(binding.value.removeDelay)
   } else if (typeof pluginOptions === "object" && pluginOptions.removeDelay !== undefined) {
     options.removeDelay = Number(pluginOptions.removeDelay)
-  }  
+  }
+
+  // errorHandler
+  if (typeof binding.value === "object" && binding.value.errorHandler !== undefined) {
+    options.errorHandler = binding.value.errorHandler
+  } else if (typeof pluginOptions === "object" && pluginOptions.errorHandler !== undefined) {
+    options.errorHandler = pluginOptions.errorHandler
+  }
 
   // check if the attribete data-downloading is present. If it isn't, add it. If it's present, the link was already clicked so cancel the operation
   const isDownloading = element.getAttribute("data-downloading")
@@ -246,7 +254,7 @@ function eventClick(element, binding, pluginOptions) {
       document.body.appendChild(link)
       link.click()
       if (options.removeDelay >= 0) {
-        setTimeout(function(){
+        setTimeout(function() {
           link.remove()
           window.URL.revokeObjectURL(url)
         }, options.removeDelay)
@@ -256,7 +264,11 @@ function eventClick(element, binding, pluginOptions) {
       }
     })
     .catch(e => {
-      throw e
+      if (options.errorHandler) {
+        options.errorHandler(e)
+      } else {
+        throw e
+      }
     })
     .finally(() => {
       // Restore the link back to it's original state
