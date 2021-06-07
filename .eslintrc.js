@@ -2,38 +2,40 @@ module.exports = {
   root: true,
 
   parserOptions: {
-    parser: "babel-eslint",
-    sourceType: "module",
+    parser: "babel-eslint"
+    // sourceType: "module"
   },
 
   env: {
     browser: true,
+    node: true
   },
-  extends: ["plugin:vue/recommended", "@vue/prettier"],
+  // extends: ["plugin:vue/recommended", "@vue/prettier"],
+  extends: ["plugin:vue/recommended", "eslint:recommended", "@vue/prettier"],
 
   // required to lint *.vue files
-  plugins: ["vue"],
+  // plugins: ["vue"],
 
   globals: {
     process: true,
-    _: true,
+    _: true
   },
 
   rules: {
-    "linebreak-style": 0,
+    // "linebreak-style": 0,
     "no-async-promise-executor": "off",
     "prefer-promise-reject-errors": "off",
-    "no-empty": ["error", { allowEmptyCatch: true }],
-    "prettier/prettier": [
-      "error",
-      {
-        semi: false,
-        trailingComma: "all",
-        htmlWhitespaceSensitivity: "ignore",
-        "html-whitespace-sensitivity": "ignore",
-      },
-    ],
+    // "no-empty": ["error", { allowEmptyCatch: true }],
+    // "prettier/prettier": [
+    //   "error",
+    //   {
+    //     semi: false,
+    //     trailingComma: "all",
+    //     htmlWhitespaceSensitivity: "ignore",
+    //     "html-whitespace-sensitivity": "ignore",
+    //   },
+    // ],
     "no-console": process.env.NODE_ENV === "production" ? "error" : "off",
-    "no-debugger": process.env.NODE_ENV === "production" ? "error" : "off",
-  },
+    "no-debugger": process.env.NODE_ENV === "production" ? "error" : "off"
+  }
 }

@@ -1,4 +1,4 @@
-{
+module.exports = {
   "htmlWhitespaceSensitivity": "ignore",
   "html-whitespace-sensitivity": "ignore",
   "semi": false,
