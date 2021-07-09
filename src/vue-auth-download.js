@@ -240,7 +240,7 @@ function eventClick(element, binding, pluginOptions) {
       )
       let fileName = href.substring(href.lastIndexOf("/") + 1)
       if (contentDisposition) {
-        const fileNameMatch = contentDisposition.match(/filename="?(.+)"?/)
+        const fileNameMatch = contentDisposition.match(/filename="?(.+?)"?$/)
         if (fileNameMatch != null && fileNameMatch.length === 2) {
           fileName = fileNameMatch[1]
           // content disposition filename is usually url encoded
