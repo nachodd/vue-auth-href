@@ -56,7 +56,7 @@ function eventClick(element, binding, pluginOptions) {
     errorHandler: e => {
       throw e
     },
-    
+
     onFinishCallback: () => {}
   }
 
@@ -184,13 +184,13 @@ function eventClick(element, binding, pluginOptions) {
   } else if (typeof pluginOptions === "object" && pluginOptions.errorHandler !== undefined) {
     options.errorHandler = pluginOptions.errorHandler
   }
-  
+
   // onFinishCallback
   if (typeof binding.value === "object" && binding.value.onFinishCallback !== undefined) {
     options.onFinishCallback = binding.value.onFinishCallback
   } else if (typeof pluginOptions === "object" && pluginOptions.onFinishCallback !== undefined) {
     options.onFinishCallback = pluginOptions.onFinishCallback
-  }  
+  }
 
   // check if the attribete data-downloading is present. If it isn't, add it. If it's present, the link was already clicked so cancel the operation
   const isDownloading = element.getAttribute("data-downloading")
@@ -291,10 +291,10 @@ function eventClick(element, binding, pluginOptions) {
       }
       element.setAttribute("href", href)
       element.removeAttribute("data-downloading")
-      
+
       if (options.onFinishCallback) {
         options.onFinishCallback()
-      }      
+      }
     })
 }
 

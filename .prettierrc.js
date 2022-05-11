@@ -1,8 +1,8 @@
 module.exports = {
-  "htmlWhitespaceSensitivity": "ignore",
+  htmlWhitespaceSensitivity: "ignore",
   "html-whitespace-sensitivity": "ignore",
-  "semi": false,
-  "trailingComma": "none",
-  "arrowParens": "avoid",
-  "printWidth": 100
+  semi: false,
+  trailingComma: "none",
+  arrowParens: "avoid",
+  printWidth: 100
 }
