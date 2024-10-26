@@ -185,6 +185,13 @@ function eventClick(element, binding, pluginOptions) {
     options.errorHandler = pluginOptions.errorHandler
   }
 
+  // beforeDownloadCallback
+  if (typeof binding.value === "object" && binding.value.beforeDownloadCallback !== undefined) {
+    options.beforeDownloadCallback = binding.value.beforeDownloadCallback
+  } else if (typeof pluginOptions === "object" && pluginOptions.beforeDownloadCallback !== undefined) {
+    options.beforeDownloadCallback = pluginOptions.beforeDownloadCallback
+  }
+
   // onFinishCallback
   if (typeof binding.value === "object" && binding.value.onFinishCallback !== undefined) {
     options.onFinishCallback = binding.value.onFinishCallback
