@@ -56,7 +56,7 @@ function eventClick(element, binding, pluginOptions) {
     errorHandler: e => {
       throw e
     },
-
+    beforeDownloadCallback: () => {},
     onFinishCallback: () => {}
   }
 
@@ -227,6 +227,10 @@ function eventClick(element, binding, pluginOptions) {
 
   const authHeader = {}
   authHeader[options.headerAuthKey] = `${options.headerAuthValuePrefix}${options.token}`
+
+  if (options.beforeDownloadCallback) {
+    options.beforeDownloadCallback()
+  }
 
   axios({
     method: "GET",
