@@ -3,10 +3,10 @@ import axios from "axios"
 const VueAuthDownload = {
   install(Vue, pluginOptions) {
     Vue.directive("auth-href", {
-      bind: function(element, binding) {
+      bind: function (element, binding) {
         setClickListener(element, binding, pluginOptions)
       },
-      componentUpdated: function(element, binding) {
+      componentUpdated: function (element, binding) {
         setClickListener(element, binding, pluginOptions)
       }
     })
@@ -45,7 +45,7 @@ function eventClick(element, binding, pluginOptions) {
     token: "",
     headerAuthKey: "Authorization",
     headerAuthValuePrefix: "Bearer ",
-    aditionalHeaders: {},
+    additionalHeaders: {},
 
     textMode: "text",
     downloadingText: "Downloading",
@@ -188,7 +188,10 @@ function eventClick(element, binding, pluginOptions) {
   // beforeDownloadCallback
   if (typeof binding.value === "object" && binding.value.beforeDownloadCallback !== undefined) {
     options.beforeDownloadCallback = binding.value.beforeDownloadCallback
-  } else if (typeof pluginOptions === "object" && pluginOptions.beforeDownloadCallback !== undefined) {
+  } else if (
+    typeof pluginOptions === "object" &&
+    pluginOptions.beforeDownloadCallback !== undefined
+  ) {
     options.beforeDownloadCallback = pluginOptions.beforeDownloadCallback
   }
 
@@ -245,7 +248,7 @@ function eventClick(element, binding, pluginOptions) {
     responseType: "blob",
     headers: {
       ...authHeader,
-      ...options.aditionalHeaders
+      ...options.additionalHeaders
     }
   })
     .then(response => {
@@ -276,7 +279,7 @@ function eventClick(element, binding, pluginOptions) {
       document.body.appendChild(link)
       link.click()
       if (options.removeDelay >= 0) {
-        setTimeout(function() {
+        setTimeout(function () {
           link.remove()
           window.URL.revokeObjectURL(url)
         }, options.removeDelay)
