@@ -1,11 +1,11 @@
 {
   "name": "vue-auth-href",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "private": false,
   "main": "./dist/vue-auth-href.common.js",
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "build": "vue-cli-service build --target lib --name vue-auth-href src/vue-auth-download.js",
     "build:lib": "vue-cli-service build --target lib --name vue-auth-href src/vue-auth-download.js",
     "lint": "vue-cli-service lint"
   },
