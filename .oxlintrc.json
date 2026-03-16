@@ -1,0 +1,13 @@
+{
+  "ignorePatterns": ["coverage/**", "dist/**"],
+  "globals": {
+    "describe": "readonly",
+    "expect": "readonly",
+    "it": "readonly",
+    "vi": "readonly"
+  },
+  "options": {
+    "typeAware": true,
+    "typeCheck": true
+  }
+}

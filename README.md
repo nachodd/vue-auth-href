@@ -1,99 +1,170 @@
+# vue-auth-href
 
+> Breaking changes: `2.0.0` and later are not compatible with the previous `1.8.0` Vue 2 release. If you still need Vue 2 support, use version `1.8.0`.
 
-# 🔒 vue-auth-href
+Vue 3 directive and composable for downloading protected resources with authentication headers.
 
-A VueJS directive for downloading files that are under a protected route schema (that needs an Authorization Header).
+`vue-auth-href` intercepts an anchor click, performs an authenticated `GET`, converts the response to a blob, and triggers the browser download flow. In `2.0.0`, the library is rewritten for Vue 3, TypeScript, Vite+, and Vitest.
 
-It's a common thing on projects to have routes that are wrapped by an authentication middleware. Sometimes, depending on the project security schema, the access to files can be protected too. The problem is, that when in your frontend you put a link (an anchor tag) to a file that is protected, it can be tricky to make the authorization process. This is where this little plugin comes to help.
+## Install
 
-This plugin comes in the form of a Vue.js directive that is ready to work with JWT auth schema. On the GET request made by an anchor tag when it's clicked, it adds the `Authorization: Bearer <TOKEN>` header automatically.
-
-### 📦 Installation
 ```bash
-npm install --save vue-auth-href
-# or
-yarn add vue-auth-href
+pnpm add vue-auth-href vue
 ```
-### 🔧 Initialization
-JWT Token must be set in order to the download works. It can be set via option in the initialization, providing a function that returns the JWT Token, or inline.
 
-```js
-import Vue from 'vue'
-import VueAuthHref from 'vue-auth-href'
-import store from "store/index"
+## Plugin Usage
 
-// Not mandatory, options can be set inline
-const options = {
-  token: () => store.getters["jwt_token"], // Note that this MUST BE a function that returns the token.
-  // other options here (full list of options described below)
+Register the plugin once and keep the token resolver in plugin options.
+
+```ts
+import { createApp } from "vue";
+import App from "./App.vue";
+import VueAuthHref from "vue-auth-href";
+
+const app = createApp(App);
+
+app.use(VueAuthHref, {
+  token: () => localStorage.getItem("access_token"),
+  headers: {
+    "x-client": "dashboard",
+  },
+  loading: {
+    text: "Downloading",
+  },
+});
+
+app.mount("#app");
+```
+
+Then use the directive on any anchor:
+
+```vue
+<template>
+  <a v-auth-href href="/api/reports/monthly.csv">Download report</a>
+</template>
+```
+
+Inline directive options still override the plugin defaults:
+
+```vue
+<template>
+  <a
+    v-auth-href="{
+      loading: {
+        text: 'Preparing file',
+        animateDots: false,
+      },
+    }"
+    href="/api/reports/monthly.csv"
+  >
+    Download report
+  </a>
+</template>
+```
+
+## Composable Usage
+
+Use the composable when you want full control over the trigger element or UI state.
+
+```vue
+<script setup lang="ts">
+import { useAuthDownload } from "vue-auth-href";
+
+const { download, error, isDownloading, status } = useAuthDownload({
+  token: () => localStorage.getItem("access_token"),
+});
+
+async function downloadReport() {
+  await download({
+    url: "/api/reports/monthly.csv",
+    fileName: "monthly.csv",
+  });
 }
-Vue.use(VueAuthHref, options)
+</script>
+
+<template>
+  <button :disabled="isDownloading" type="button" @click="downloadReport">
+    {{ isDownloading ? "Downloading..." : "Download report" }}
+  </button>
+
+  <p v-if="status === 'error' && error">Download failed: {{ error.message }}</p>
+</template>
 ```
 
-### 🕹 Usage
+## API
 
-```html
-<!-- Initialization via Options:  -->
-<a v-auth-href href="https://link.to/your/protected/file.zip">Your File</a>
+### `AuthDownloadOptions`
 
-<!-- Inline Initialization:  -->
-<a v-auth-href="{ dotsAnimation: false }" href="https://link.to/your/protected/file.zip">Your File</a>
+Shared options used by the composable and directive:
+
+| Option             | Type                                                                                | Default            | Description                                                                   |
+| ------------------ | ----------------------------------------------------------------------------------- | ------------------ | ----------------------------------------------------------------------------- |
+| `token`            | `string \| Ref<string \| null \| undefined> \| (() => string \| null \| undefined)` | -                  | Required unless provided by plugin or composable defaults.                    |
+| `authHeader`       | `string`                                                                            | `"Authorization"`  | Header name used for the auth token.                                          |
+| `authScheme`       | `string`                                                                            | `"Bearer"`         | Prepended to the token as `<scheme> <token>`. Use `""` to send the raw token. |
+| `headers`          | `Record<string, string>`                                                            | `{}`               | Extra request headers.                                                        |
+| `request`          | `Omit<RequestInit, "headers" \| "method">`                                          | `undefined`        | Extra fetch options such as `credentials`.                                    |
+| `fetcher`          | `fetch`-compatible function                                                         | `globalThis.fetch` | Override for testing or custom transports.                                    |
+| `fileName`         | `string \| ((response, url) => string \| undefined)`                                | `undefined`        | Preferred file name before falling back to response headers or the URL.       |
+| `cleanupDelay`     | `number`                                                                            | `-1`               | Delay before removing the generated blob link.                                |
+| `onBeforeDownload` | `() => void \| Promise<void>`                                                       | `undefined`        | Invoked before the request starts.                                            |
+| `onSuccess`        | `(result) => void`                                                                  | `undefined`        | Invoked after a successful download.                                          |
+| `onError`          | `(error) => void`                                                                   | `undefined`        | Invoked with an `AuthDownloadError`.                                          |
+| `onSettled`        | `(outcome) => void`                                                                 | `undefined`        | Invoked after success or failure.                                             |
+
+### `AuthHrefDirectiveOptions`
+
+Directive options extend `AuthDownloadOptions` with a `loading` object:
+
+| Option                   | Type               | Default         | Description                                             |
+| ------------------------ | ------------------ | --------------- | ------------------------------------------------------- |
+| `loading.mode`           | `"text" \| "html"` | `"text"`        | Controls whether loading content uses text or raw HTML. |
+| `loading.text`           | `string`           | `"Downloading"` | Text shown while the request is in flight.              |
+| `loading.html`           | `string`           | `""`            | HTML shown while the request is in flight.              |
+| `loading.animateDots`    | `boolean`          | `true`          | Adds the dot animation when `loading.mode` is `"text"`. |
+| `loading.replaceContent` | `boolean`          | `true`          | Replaces the anchor content while downloading.          |
+
+### `useAuthDownload()`
+
+The composable returns:
+
+- `status`: `idle | pending | success | error`
+- `isDownloading`: readonly boolean ref
+- `error`: readonly `AuthDownloadError | null` ref
+- `download(request, overrides?)`
+- `reset()`
+
+### Exports
+
+```ts
+import VueAuthHref, {
+  AuthDownloadError,
+  createAuthHrefDirective,
+  createAuthHrefPlugin,
+  useAuthDownload,
+  vAuthHref,
+} from "vue-auth-href";
 ```
-##### 🔎 Demo:
-![Demo 1](https://github.com/nachodd/vue-auth-href/blob/master/demo_1.gif)
 
+## Development
 
-Some options can be passed inline to the directive, like:
-```html
-<a v-auth-href="{token: 'TOKEN'}" href="https://link.to/your/protected/file.zip">Your File</a>
+```bash
+pnpm install
+pnpm run check
+pnpm run test:run
+pnpm run build
 ```
-### ⚙️ Options
 
-| Option | Type | Default | Can be set on | Description |
-| --- | --- | --- | --- | --- |
-| `token` | String |  | Initialization / Inline | The JWT Token used for authentication. This parameter is **REQUIRED** |
-| `headerAuthKey` | String | "Authorization" | Initialization | The key used in the authorization header |
-| `headerAuthValuePrefix` | String | "Bearer " | Initialization | The prefix of the value used in the authorization header |
-| `additionalHeaders` | Object | {} | Initialization | Additional headers to be sent on the request header. If it is setted, must be a javascript object |
-| `textMode` | String | "text" | Initialization / Inline | Indicates to use 'text' or 'html' when link is clicked (these two are the only possible values) |
-| `downloadingText` | String | "Downloading" | Initialization / Inline | Text to be shown when link is clicked and before the file is downloaded |
-| `downloadingHtml` | String | "" | Initialization / Inline | HTML to be shown when link is clicked and before the file is downloaded. Can be used, for instance, to display an icon (see examples below) |
-| `dotsAnimation` | Boolean | true | Initialization / Inline | Show the fancy dots animation when link is clicked. Works only when `textMode: 'text'` |
+The project uses:
 
-### 🔎 Other Demos:
+- `Vite+` for build, format, and toolchain orchestration
+- `Vitest` and `@vue/test-utils` for unit tests
+- `TypeScript` for the library source and public types
 
-```js
-...
-Vue.use(VueAuthHref, {
-  token: () => store.getters["auth/token"],
-  textMode: "text",
-  downloadingText: "Descargando",
-  additionalHeaders: { env: "test" }, // additional headers set on the request
-}
-...
-```
-![Demo 2](https://github.com/nachodd/vue-auth-href/blob/master/demo_2.gif)
+## Migration
 
-```html
-<a v-auth-href="{
-  token: $store.getters['auth/token'],
-  textMode: 'html',
-  downloadingHtml: '<i class=\'fas fa-cog fa-spin\'></i>',
-}" href="https://link.to/your/protected/file.zip">Your File</a>
-```
-![Demo 3](https://github.com/nachodd/vue-auth-href/blob/master/demo_3.gif)
+`2.0.0` is a breaking release. See [MIGRATION.md](./MIGRATION.md) for the upgrade notes from the Vue 2 line.
 
+## License
 
-### 🤝 Contributing
-
-This repository is open for contribution. So, go ahead, fork it & send me a PR!
-
-### ⭐️ Support
-
-If you like this project, You can support me with starring ⭐ this repository
-
-### 📄 License
-
-[MIT](LICENSE)
-
-Developed with ❤️ by nachodd
+[MIT](./LICENSE)

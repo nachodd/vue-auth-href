@@ -1,60 +1,64 @@
 {
   "name": "vue-auth-href",
-  "version": "1.8.0",
+  "version": "2.0.0",
   "private": false,
-  "main": "./dist/vue-auth-href.common.js",
-  "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build --target lib --name vue-auth-href src/vue-auth-download.js",
-    "build:lib": "vue-cli-service build --target lib --name vue-auth-href src/vue-auth-download.js",
-    "lint": "vue-cli-service lint"
-  },
-  "dependencies": {
-    "axios": "^0.21.2",
-    "core-js": "^3.11.1",
-    "vue": "^2.6.12"
-  },
-  "devDependencies": {
-    "@vue/cli-plugin-babel": "^4.5.12",
-    "@vue/cli-plugin-eslint": "^4.5.12",
-    "@vue/cli-service": "^4.5.12",
-    "@vue/eslint-config-prettier": "^6.0.0",
-    "babel-eslint": "^10.1.0",
-    "eslint": "^7.25.0",
-    "eslint-loader": "^4.0.2",
-    "eslint-plugin-prettier": "^3.4.0",
-    "eslint-plugin-vue": "^7.9.0",
-    "vue-template-compiler": "^2.6.12"
-  },
-  "postcss": {
-    "plugins": {
-      "autoprefixer": {}
-    }
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions"
+  "description": "Vue 3 directive and composable for downloading protected resources with authentication headers.",
+  "keywords": [
+    "auth",
+    "composable",
+    "directive",
+    "download",
+    "vue",
+    "vue3"
   ],
-  "description": "A VueJS directive for downloading files that are under a protected route schema (that needs an Authorization Header). It's a common thing on projects to have routes that are wrapped by an authentication middleware. Sometimes, depending on the project security schema, the access to files can be protected too. The problem is, that when in your frontend you put a link (an anchor tag) to a file that is protected, it can be tricky to make the authorization process. This is where this little plugin comes to help. This plugin comes in the form of a Vue.js directive that is ready to work with JWT auth schema. On the GET request made by an anchor tag when it's clicked, it adds the `Authorization: Bearer <TOKEN>` header automatically.",
+  "homepage": "https://github.com/nachodd/vue-auth-href#readme",
+  "bugs": {
+    "url": "https://github.com/nachodd/vue-auth-href/issues"
+  },
+  "license": "MIT",
+  "author": "nachodd",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nachodd/vue-auth-href.git"
   },
-  "keywords": [
-    "vue",
-    "directive",
-    "auth",
-    "download",
-    "middleware"
-  ],
   "files": [
-    "dist/*",
-    "src/*"
+    "dist"
   ],
-  "author": "nachodd",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/nachodd/vue-auth-href/issues"
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
+    }
   },
-  "homepage": "https://github.com/nachodd/vue-auth-href#readme"
+  "scripts": {
+    "build": "vp pack",
+    "check": "vp check",
+    "fmt": "vp fmt --write .",
+    "lint": "vp lint",
+    "test": "vp test",
+    "test:run": "vp test run",
+    "test:coverage": "vp test run --coverage"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@vue/test-utils": "^2.4.6",
+    "happy-dom": "^18.0.1",
+    "typescript": "^5.9.0",
+    "vite-plus": "^0.1.12",
+    "vitest": "^4.1.0",
+    "vue": "^3.5.13",
+    "vue-tsc": "^3.0.0"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.0"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "packageManager": "pnpm@10.29.3+sha512.498e1fb4cca5aa06c1dcf2611e6fafc50972ffe7189998c409e90de74566444298ffe43e6cd2acdc775ba1aa7cc5e092a8b7054c811ba8c5770f84693d33d2dc"
 }
